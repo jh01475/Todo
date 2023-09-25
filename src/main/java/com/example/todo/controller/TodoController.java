@@ -126,19 +126,18 @@ public class TodoController {
 	}
 
 	@DeleteMapping
-	public ResponseEntity<?> delete(@RequestBody TodoDTO dto){
-	try {
-	List<String> message =new ArrayList(); 
-	String msg = service.delete(dto.getId());
-	message.add(msg);
-	// Response DTO를 생성한다.
-	ResponseDTO<String> response = 	ResponseDTO.<String>builder().data(message).build();
-	return ResponseEntity.ok().body(response);
-	}catch (Exception e){
-	String error = e.getMessage();
-	ResponseDTO<TodoDTO> response = 
-	ResponseDTO.<TodoDTO>builder().error(error).build();
-	return ResponseEntity.badRequest().body(response);
-	}
+	public ResponseEntity<?> delete(@RequestBody TodoDTO dto) {
+		try {
+			List<String> message = new ArrayList();
+			String msg = service.delete(dto.getId());
+			message.add(msg);
+			// Response DTO를 생성한다.
+			ResponseDTO<String> response = ResponseDTO.<String>builder().data(message).build();
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+			String error = e.getMessage();
+			ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().error(error).build();
+			return ResponseEntity.badRequest().body(response);
+		}
 	}
 }
