@@ -16,21 +16,22 @@ import com.example.todo.security.TokenProvider;
 import com.example.todo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 
+@CrossOrigin(origins = "*")
 @Slf4j
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins ="*")
 public class UserController {
 	@Autowired
 	private UserService userService;
 	@Autowired
 	private TokenProvider tokenProvider;
+	private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO) {
 		try {
 			UserEntity user = UserEntity.builder().email(userDTO.getEmail()).username(userDTO.getUsername())
-					.password(userDTO.getPassword()).build();
+					.password(passwordEncoder.encode(userDTO.getPassword())).build();
 			UserEntity registeredUser = userService.create(user);
 			UserDTO responseUserDTO = userDTO.builder().email(registeredUser.getEmail()).id(registeredUser.getId())
 					.username(registeredUser.getUsername()).build();
@@ -43,7 +44,7 @@ public class UserController {
 
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO) {
-		UserEntity user = userService.getByCredentials(userDTO.getEmail(), userDTO.getPassword());
+		UserEntity user = userService.getByCredentials(userDTO.getEmail(), userDTO.getPassword(), passwordEncoder);
 		if (user != null) {
 			final String token = tokenProvider.create(user);
 			final UserDTO responseUserDTO = UserDTO.builder().email(user.getEmail()).id(user.getId()).token(token)
